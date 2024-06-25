@@ -1,5 +1,5 @@
 # TODO
 
 ### add CI/CD and transcation services
-### provide Kafka UI and minor changes for Instrastructure
+### Add Routing system 
 #### Expected to finish 27th June
