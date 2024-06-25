@@ -3,6 +3,7 @@ provider "azurerm" {
 }
 
 provider "helm" {
+   debug   = true
    kubernetes {
     host                   = module.aks.aks_cluster_kube_config.0.host
     client_certificate     = base64decode(module.aks.aks_cluster_kube_config.0.client_certificate)
@@ -11,10 +12,17 @@ provider "helm" {
   }
 }
 
+provider "kubernetes" {
+    host                   = module.aks.aks_cluster_kube_config.0.host
+    client_certificate     = base64decode(module.aks.aks_cluster_kube_config.0.client_certificate)
+    client_key             = base64decode(module.aks.aks_cluster_kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(module.aks.aks_cluster_kube_config.0.cluster_ca_certificate)
+}
+
 module "network" {
   source              = "../modules/network"
   resource_group_name = "example-dev-rg"
-  location            = "West Europe"
+  location            = "northeurope"
 }
 
 module "aks" {
@@ -64,7 +72,7 @@ module "prometheus" {
 }
 
 resource "azurerm_key_vault" "example" {
-  name                        = "examplekeyvaultdev"
+  name                        = "superkeyvaultdev"
   location                    = module.network.resource_group_location
   resource_group_name         = module.network.resource_group_name
   tenant_id                   = data.azurerm_client_config.current.tenant_id
@@ -72,12 +80,20 @@ resource "azurerm_key_vault" "example" {
 
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = module.aks.aks_cluster_identity_principal_id
+    object_id = data.azurerm_client_config.current.object_id
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+    ]
   }
 }
 
 resource "azurerm_key_vault_secret" "storage_account_key" {
-  name         = "examplekeyvaultdev"
+  name         = "super-secret"
   value        = module.storage.storage_account_primary_access_key
   key_vault_id = azurerm_key_vault.example.id
 }
@@ -86,6 +102,6 @@ data "azurerm_client_config" "current" {}
 
 resource "azurerm_role_assignment" "example" {
   scope              = azurerm_key_vault.example.id
-  role_definition_name = "Key Vault Secrets User"
+  role_definition_name = "Owner"
   principal_id       = module.aks.aks_cluster_identity_principal_id
 }
