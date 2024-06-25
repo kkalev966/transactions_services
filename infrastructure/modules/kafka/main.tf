@@ -3,7 +3,6 @@ resource "helm_release" "kafka" {
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "kafka"
   namespace  = "default"
-  count      = length(var.kafka_topics)
 
   set {
     name  = "externalStorage.enabled"
@@ -45,19 +44,45 @@ resource "helm_release" "kafka" {
     value = "nginx"
   }
 
-  set {
-    name  = "topics[${count.index}].name"
-    value = var.kafka_topics[count.index].name
+  # set {
+  #   name  = "topics[${count.index}].name"
+  #   value = var.kafka_topics[count.index].name
+  # }
+
+  # set {
+  #   name  = "topics[${count.index}].partitions"
+  #   value = var.kafka_topics[count.index].partitions
+  # }
+
+  # set {
+  #   name  = "topics[${count.index}].replicationFactor"
+  #   value = var.kafka_topics[count.index].replication_factor
+  # }
+
+
+  dynamic "set" {
+    for_each = var.kafka_topics
+    content {
+      name  = "topics[${set.key}].name"
+      value = set.value.name
+    }
   }
 
-  set {
-    name  = "topics[${count.index}].partitions"
-    value = var.kafka_topics[count.index].partitions
+  dynamic "set" {
+    for_each = var.kafka_topics
+    content {
+      name  = "topics[${set.key}].partitions"
+      value = set.value.partitions
+    }
   }
 
-  set {
-    name  = "topics[${count.index}].replicationFactor"
-    value = var.kafka_topics[count.index].replication_factor
+  dynamic "set" {
+    for_each = var.kafka_topics
+    content {
+      name  = "topics[${set.key}].replicationFactor"
+      value = set.value.replication_factor
+    }
   }
+
 }
 

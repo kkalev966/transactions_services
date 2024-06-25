@@ -16,6 +16,7 @@ resource "azurerm_kubernetes_cluster" "example" {
 
   network_profile {
     network_plugin = "azure"
-    network_policy = "calico"
+    network_policy = "azure"
   }
 }
+

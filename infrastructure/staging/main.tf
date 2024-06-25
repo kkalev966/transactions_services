@@ -3,12 +3,20 @@ provider "azurerm" {
 }
 
 provider "helm" {
+   debug   = true
    kubernetes {
     host                   = module.aks.aks_cluster_kube_config.0.host
     client_certificate     = base64decode(module.aks.aks_cluster_kube_config.0.client_certificate)
     client_key             = base64decode(module.aks.aks_cluster_kube_config.0.client_key)
     cluster_ca_certificate = base64decode(module.aks.aks_cluster_kube_config.0.cluster_ca_certificate)
   }
+}
+
+provider "kubernetes" {
+    host                   = module.aks.aks_cluster_kube_config.0.host
+    client_certificate     = base64decode(module.aks.aks_cluster_kube_config.0.client_certificate)
+    client_key             = base64decode(module.aks.aks_cluster_kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(module.aks.aks_cluster_kube_config.0.cluster_ca_certificate)
 }
 
 module "network" {
@@ -55,7 +63,6 @@ module "kafka" {
       replication_factor = 1
     },
   ]
-  kafka_broker_connect = "${module.network.public_ip_address}:9092"
 }
 
 module "prometheus" {
@@ -71,9 +78,17 @@ resource "azurerm_key_vault" "example" {
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   sku_name                    = "standard"
 
-  access_policy {
+   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = module.aks.aks_cluster_identity_principal_id
+    object_id = data.azurerm_client_config.current.object_id
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+    ]
   }
 }
 
@@ -87,6 +102,6 @@ data "azurerm_client_config" "current" {}
 
 resource "azurerm_role_assignment" "example" {
   scope              = azurerm_key_vault.example.id
-  role_definition_name = "Key Vault Secrets User"
+  role_definition_name = "Owner"
   principal_id       = module.aks.aks_cluster_identity_principal_id
 }
