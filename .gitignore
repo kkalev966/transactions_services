@@ -19,3 +19,7 @@ override.tf.json
 
 # .terraform directory
 .terraform/
+
+__pycache__/
+*.py[cod]
+*$py.class
