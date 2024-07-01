@@ -14,17 +14,8 @@ authentication_consumer = KafkaService('4.210.33.181:9094').create_consumer("aut
 transactions_consumer = KafkaService('4.210.33.181:9094').create_consumer("transactions-dev")
 
 
-
-
-
 async def main():
-    # queue = asyncio.Queue()
-    # n = 10
-
-    producer_task = asyncio.create_task()
-    consumer_task = asyncio.create_task()
-
-    await asyncio.gather(producer_task, consumer_task)
+    print("it's work")
 
 if __name__ == '__main__':
     asyncio.run(main())
