@@ -39,13 +39,17 @@ module "storage" {
   location             = module.network.resource_group_location
 }
 
+module ingress {
+  source = "../modules/ingress"
+}
+
 module "kafka" {
   source                          = "../modules/kafka"
   storage_account_name            = module.storage.storage_account_name
   storage_container_name          = module.storage.storage_container_name
   storage_account_key_secret_name = "storageaccountkeydev"
   key_vault_name                  = "examplekeyvaultdev"
-  kafka_hostname                  = module.network.public_ip_address
+  storage_account_key_secret      = azurerm_key_vault_secret.storage_account_key.value   
   kafka_topics                    = [
     {
       name               = "Transactions-Dev"
@@ -67,8 +71,7 @@ module "kafka" {
 
 module "prometheus" {
   source             = "../modules/prometheus"
-  grafana_hostname   = module.network.public_ip_address
-  load_balancer_ip   = module.network.public_ip_address
+  grafana_ip         = module.ingress.nginx_ingress_loadbalancer_ip
 }
 
 resource "azurerm_key_vault" "example" {

@@ -18,10 +18,15 @@ variable "key_vault_name" {
   type        = string
 }
 
-variable "kafka_hostname" {
-  description = "The hostname for Kafka Ingress"
+variable "storage_account_key_secret" {
+  description = "The secret of the storage account"
   type        = string
 }
+
+# variable "kafka_hostname" {
+#   description = "The hostname for Kafka Ingress"
+#   type        = string
+# }
 
 variable "kafka_topics" {
   description = "List of Kafka topics to create"

@@ -1,24 +1,3 @@
-provider "azurerm" {
-  features {}
-}
-
-provider "helm" {
-   debug   = true
-   kubernetes {
-    host                   = module.aks.aks_cluster_kube_config.0.host
-    client_certificate     = base64decode(module.aks.aks_cluster_kube_config.0.client_certificate)
-    client_key             = base64decode(module.aks.aks_cluster_kube_config.0.client_key)
-    cluster_ca_certificate = base64decode(module.aks.aks_cluster_kube_config.0.cluster_ca_certificate)
-  }
-}
-
-provider "kubernetes" {
-    host                   = module.aks.aks_cluster_kube_config.0.host
-    client_certificate     = base64decode(module.aks.aks_cluster_kube_config.0.client_certificate)
-    client_key             = base64decode(module.aks.aks_cluster_kube_config.0.client_key)
-    cluster_ca_certificate = base64decode(module.aks.aks_cluster_kube_config.0.cluster_ca_certificate)
-}
-
 module "network" {
   source              = "../modules/network"
   resource_group_name = "example-staging-rg"
@@ -45,7 +24,7 @@ module "kafka" {
   storage_container_name          = module.storage.storage_container_name
   storage_account_key_secret_name = "storageaccountkeystaging"
   key_vault_name                  = "examplekeyvaultstaging"
-  kafka_hostname                  = module.network.public_ip_address
+  # kafka_hostname                  = module.network.public_ip_address
   kafka_topics                    = [
     {
       name               = "Transactions-Stage"
@@ -67,8 +46,8 @@ module "kafka" {
 
 module "prometheus" {
   source             = "../modules/prometheus"
-  grafana_hostname   = module.network.public_ip_address
-  load_balancer_ip   = module.network.public_ip_address
+  # grafana_hostname   = module.network.public_ip_address
+  # load_balancer_ip   = module.network.public_ip_address
 }
 
 resource "azurerm_key_vault" "example" {

@@ -8,12 +8,12 @@ output "resource_group_location" {
   description = "The location of the resource group."
 }
 
-output "subnet_id" {
-  value = azurerm_subnet.example.id
-  description = "The ID of the subnet created."
-}
+# output "subnet_id" {
+#   value = azurerm_subnet.example.id
+#   description = "The ID of the subnet created."
+# }
 
-output "public_ip_address" {
-  value = azurerm_public_ip.example.ip_address
-  description = "The public IP address allocated."
-}
+# output "public_ip_address" {
+#   value = azurerm_public_ip.example.ip_address
+#   description = "The public IP address allocated."
+# }
