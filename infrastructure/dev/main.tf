@@ -52,17 +52,17 @@ module "kafka" {
   storage_account_key_secret      = azurerm_key_vault_secret.storage_account_key.value   
   kafka_topics                    = [
     {
-      name               = "Transactions-Dev"
+      name               = "transactions-dev"
       partitions         = 1
       replication_factor = 1
     },
     {
-      name               = "Authentication-Dev"
+      name               = "authentication-dev"
       partitions         = 1
       replication_factor = 1
     },
     {
-      name               = "Notify-Dev"
+      name               = "notifications-dev"
       partitions         = 1
       replication_factor = 1
     },
