@@ -24,21 +24,21 @@ module "kafka" {
   storage_container_name          = module.storage.storage_container_name
   storage_account_key_secret_name = "storageaccountkeystaging"
   key_vault_name                  = "examplekeyvaultstaging"
-  # kafka_hostname                  = module.network.public_ip_address
+  storage_account_key_secret      = azurerm_key_vault_secret.storage_account_key.value   
   kafka_topics                    = [
     {
-      name               = "Transactions-Stage"
-      partitions         = 3
+      name               = "transactions-stage"
+      partitions         = 1
       replication_factor = 1
     },
     {
-      name               = "Atuhentication-Stage"
-      partitions         = 3
+      name               = "authentication-stage"
+      partitions         = 1
       replication_factor = 1
     },
     {
-      name               = "Notify-Stage"
-      partitions         = 3
+      name               = "notifications-stage"
+      partitions         = 1
       replication_factor = 1
     },
   ]
@@ -46,8 +46,7 @@ module "kafka" {
 
 module "prometheus" {
   source             = "../modules/prometheus"
-  # grafana_hostname   = module.network.public_ip_address
-  # load_balancer_ip   = module.network.public_ip_address
+  grafana_ip         = module.ingress.nginx_ingress_loadbalancer_ip
 }
 
 resource "azurerm_key_vault" "example" {
